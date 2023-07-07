@@ -15,9 +15,11 @@ function toggleRecord() {
 }
 
 function initSpeechRecognition(onResult: (e: SpeechRecognitionEvent) => void) {
-	const recognition = new window.SpeechRecognition || new  window.webkitSpeechRecognition;
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  
+	const recognition = new SpeechRecognition();
 
-	recognition.continuous = true;
+	recognition.continuous = false;
 	recognition.interimResults = true;
 
 	recognition.onresult = onResult;
