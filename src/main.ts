@@ -1,30 +1,18 @@
+import VoxSense from './VoxSense';
 import './styles.sass';
 
 
 function toggleRecord() {
 	if (recordBtn.style['animationName'] === 'flash') {
-		recognition.stop();
+		voxSense.stop();
 
 		recordBtn.style['animationName'] = 'none';
 		content.innerText = '';
 	} else {
-		recognition.start();
+		voxSense.start({ onContinuousResult: showTranscriptResult});
 
 		recordBtn.style['animationName'] = 'flash';
 	}
-}
-
-function initSpeechRecognition(onResult: (e: SpeechRecognitionEvent) => void) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  
-	const recognition = new SpeechRecognition();
-
-	recognition.continuous = false;
-	recognition.interimResults = true;
-
-	recognition.onresult = onResult;
-
-	return recognition;
 }
 
 function showTranscriptResult(event: SpeechRecognitionEvent) {
@@ -37,8 +25,8 @@ function showTranscriptResult(event: SpeechRecognitionEvent) {
 	content.innerText = result;
 }
 
+const voxSense = new VoxSense();
+
 const content = document.querySelector<HTMLDivElement>('#content')!;
 const recordBtn = document.querySelector<HTMLButtonElement>('#record')!;
 recordBtn.addEventListener('click', toggleRecord);
-
-const recognition = initSpeechRecognition(showTranscriptResult);
