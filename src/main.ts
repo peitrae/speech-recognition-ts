@@ -1,4 +1,5 @@
 import VoxSense from './VoxSense';
+import { VoxSenseResult } from './VoxSense/VoxSense.types';
 import './styles.sass';
 
 
@@ -15,14 +16,8 @@ function toggleRecord() {
 	}
 }
 
-function showTranscriptResult(event: SpeechRecognitionEvent) {
-	let result = '';
-
-	for (let i = event.resultIndex; i < event.results.length; i++) {
-		result += event.results[i][0].transcript;
-	}
-
-	content.innerText = result;
+function showTranscriptResult(result: VoxSenseResult) {
+	content.innerText = result.transcript;
 }
 
 const voxSense = new VoxSense();

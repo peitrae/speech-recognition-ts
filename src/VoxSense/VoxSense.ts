@@ -1,7 +1,8 @@
-import { VoxSenseOptions } from './VoxSense.types';
+import { VoxSenseOptions, VoxSenseResult } from './VoxSense.types';
 
 export class VoxSense {
 	private recognition!: SpeechRecognition;
+	private options?: VoxSenseOptions;
 
 	constructor() {
 		this.initialize();
@@ -29,9 +30,59 @@ export class VoxSense {
 	 * @param options
 	 */
 	private setOptions(options: VoxSenseOptions) {
+		this.options = options;
+
 		this.recognition.continuous = options.continuous ?? true;
 		this.recognition.interimResults = options.interimResults ?? true;
-		this.recognition.onresult = options.onContinuousResult ?? null;
+		this.recognition.onresult = this.onResult.bind(this);
+	}
+
+	/**
+	 * Parse speech recognition result that is `SpeechRecognitionEvent` to `VoxSenseResult`.
+	 *
+	 * @param e
+	 * @returns
+	 */
+	private parseResult(e: SpeechRecognitionEvent): VoxSenseResult {
+		let result = {
+			transcript: '',
+			confidence: 0,
+			isFinal: true,
+		};
+
+		for (let i = e.resultIndex; i < e.results.length; i++) {
+			result = {
+				transcript: (result.transcript += e.results[i][0].transcript),
+				confidence: e.results[i][0].confidence,
+				isFinal: e.results[i].isFinal,
+			};
+		}
+
+		return result;
+	}
+
+	/**
+	 * Fired when the speech recognition returns a result.
+	 *
+	 * @param e
+	 * @returns
+	 */
+	private onResult(e: SpeechRecognitionEvent) {
+		const result = this.parseResult(e);
+
+		if (!this.options) {
+			return;
+		}
+
+		const { onContinuousResult, onFinalResult } = this.options;
+
+		if (onContinuousResult) {
+			onContinuousResult(result);
+		}
+
+		if (result.isFinal && onFinalResult) {
+			onFinalResult(result);
+		}
 	}
 
 	/**

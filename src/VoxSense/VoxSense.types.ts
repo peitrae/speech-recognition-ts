@@ -1,3 +1,9 @@
+export interface VoxSenseResult {
+  transcript: string,
+  confidence: number,
+  isFinal: boolean
+}
+
 export interface VoxSenseOptions {
   /**
    * Controls whether continuous results are returned for each recognition, or only a single result. 
@@ -15,10 +21,18 @@ export interface VoxSenseOptions {
 	interimResults?: boolean;
 
 	/**
-	 * Fired when the speech recognition service returns a result.
+	 * Fired when the speech recognition returns a result.
 	 *
-	 * @param e
+	 * @param result
 	 * @returns
 	 */
-	onContinuousResult?: (e: SpeechRecognitionEvent) => void;
+	onContinuousResult?: (result: VoxSenseResult) => void;
+
+  /**
+	 * Fired when the speech recognition return a final result.
+	 *
+	 * @param result
+	 * @returns
+	 */
+  onFinalResult?: (result: VoxSenseResult) => void;
 }
