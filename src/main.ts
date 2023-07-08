@@ -10,7 +10,7 @@ function toggleRecord() {
 		recordBtn.style['animationName'] = 'none';
 		content.innerText = '';
 	} else {
-		voxSense.start({ onContinuousResult: showTranscriptResult});
+		voxSense.start();
 
 		recordBtn.style['animationName'] = 'flash';
 	}
@@ -20,7 +20,7 @@ function showTranscriptResult(result: VoxSenseResult) {
 	content.innerText = result.transcript;
 }
 
-const voxSense = new VoxSense();
+const voxSense = new VoxSense({ onContinuousResult: showTranscriptResult});
 
 const content = document.querySelector<HTMLDivElement>('#content')!;
 const recordBtn = document.querySelector<HTMLButtonElement>('#record')!;

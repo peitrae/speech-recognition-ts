@@ -4,8 +4,10 @@ export class VoxSense {
 	private recognition!: SpeechRecognition;
 	private options?: VoxSenseOptions;
 
-	constructor() {
+	constructor(options?: VoxSenseOptions) {
 		this.initialize();
+
+		if (options) this.setOptions(options);
 	}
 
 	/**
@@ -20,7 +22,6 @@ export class VoxSense {
 			throw new Error('This browser does not support SpeechRecognition');
 		}
 
-		// TODO: Handle if permission is blocked or denied.
 		this.recognition = new SpeechRecognition();
 	}
 
@@ -34,7 +35,9 @@ export class VoxSense {
 
 		this.recognition.continuous = options.continuous ?? true;
 		this.recognition.interimResults = options.interimResults ?? true;
+
 		this.recognition.onresult = this.onResult.bind(this);
+		this.recognition.onerror = this.onError.bind(this);
 	}
 
 	/**
@@ -85,15 +88,22 @@ export class VoxSense {
 		}
 	}
 
+  /**
+   * Throw speech recognition error.
+   * 
+   * @param e 
+   */
+	private onError(e: SpeechRecognitionErrorEvent) {
+		throw new Error(e.error);
+	}
+
 	/**
 	 *
 	 * Starts the speech recognition service listening to incoming audio.
 	 *
 	 * @param options
 	 */
-	start(options?: VoxSenseOptions) {
-		if (options) this.setOptions(options);
-
+	start() {
 		this.recognition.start();
 	}
 
